@@ -43,11 +43,27 @@ func main() {
 	playlistId := fmt.Sprintln(r.FindString(inp))
 	playlistId = playlistId[9 : len(playlistId)-2]
 	// fmt.Println(playlistId)
+	playlistId2 := "1ckDytqUi4BUYzs6HIhcAN"
 
-	tracks, err := client.GetPlaylistItems(ctx, spotify.ID(playlistId))
+	tracks, err := client.GetPlaylistItems(ctx, spotify.ID(playlistId2))
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println(tracks)
+	for page := 1; ; page++ {
+		fmt.Println(tracks)
+
+		err = client.NextPage(ctx, tracks)
+		if err == spotify.ErrNoMorePages {
+			break
+		}
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+
+	// fmt.Println(tracks)
+	// fmt.Println()
+	// fmt.Printf("%T\n", tracks)
+	// fmt.Printf("Playlist had total %d tracks\n", tracks.Total)
 }
