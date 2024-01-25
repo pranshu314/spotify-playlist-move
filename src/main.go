@@ -154,11 +154,18 @@ func main() {
 			fmt.Println(err)
 		}
 
+		service2, err := youtube.New(buildOAuthHTTPClient())
+		if err != nil {
+			fmt.Println(err)
+		}
+
 		title := ""
 		fmt.Printf("Enter the title of the playlist: ")
 		fmt.Scan(&title)
+		// fmt.Println(title)
+
 		songsMap := make(map[string]string)
-		playlist := youtube.Playlist{
+		playlist := &youtube.Playlist{
 			Snippet: &youtube.PlaylistSnippet{
 				Title:       title,
 				Description: "Playlist created by youtube data api v3",
@@ -167,10 +174,11 @@ func main() {
 				PrivacyStatus: "public",
 			},
 		}
+
 		for _, item := range response.Items {
 			songsMap[item.Id.VideoId] = item.Snippet.Title
 			// fmt.Println(item.Id.VideoId, item.Snippet.Title)
-			call2 := service.Playlists.Insert([]string{"snippet", "status"}, &playlist)
+			call2 := service2.Playlists.Insert([]string{"snippet", "status"}, playlist)
 			_, err := call2.Do()
 			if err != nil {
 				fmt.Println(err)
