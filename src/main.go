@@ -50,8 +50,21 @@ func main() {
 		fmt.Println(err)
 	}
 
+	r2 := regexp.MustCompile(`\[(.*)\]`)
+
+	songs := []string{}
+
 	for page := 1; ; page++ {
-		fmt.Println(tracks)
+		for _, v := range tracks.Items {
+			inp2 := fmt.Sprintln(v.Track)
+			inp3 := fmt.Sprintln(v.Track.Track.Artists[0].Name)
+			inp4 := fmt.Sprintln(v.Track.Track.Album.Name)
+			songs = append(songs, fmt.Sprintf("%s by %s in %s", r2.FindString(inp2), inp3, inp4))
+		}
+
+		for i, v := range songs {
+			fmt.Printf("%d. %s\n", i+1, v)
+		}
 
 		err = client.NextPage(ctx, tracks)
 		if err == spotify.ErrNoMorePages {
@@ -62,8 +75,4 @@ func main() {
 		}
 	}
 
-	// fmt.Println(tracks)
-	// fmt.Println()
-	// fmt.Printf("%T\n", tracks)
-	// fmt.Printf("Playlist had total %d tracks\n", tracks.Total)
 }
