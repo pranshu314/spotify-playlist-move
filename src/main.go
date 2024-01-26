@@ -147,6 +147,27 @@ func main() {
 		fmt.Println(err)
 	}
 
+	service2, err := youtube.New(buildOAuthHTTPClient())
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	title := ""
+	fmt.Printf("Enter the title of the playlist: ")
+	fmt.Scan(&title)
+
+	playlist := &youtube.Playlist{
+		Snippet: &youtube.PlaylistSnippet{
+			Title:       title,
+			Description: "Playlist created by youtube data api v3",
+		},
+		Status: &youtube.PlaylistStatus{
+			PrivacyStatus: "public",
+		},
+	}
+
+	songsMap := make(map[string]string)
+
 	for _, val := range songs {
 		call := service.Search.List([]string{"id", "snippet"}).Q(val).MaxResults(1)
 		response, err := call.Do()
@@ -154,36 +175,14 @@ func main() {
 			fmt.Println(err)
 		}
 
-		service2, err := youtube.New(buildOAuthHTTPClient())
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		title := ""
-		fmt.Printf("Enter the title of the playlist: ")
-		fmt.Scan(&title)
-		// fmt.Println(title)
-
-		songsMap := make(map[string]string)
-		playlist := &youtube.Playlist{
-			Snippet: &youtube.PlaylistSnippet{
-				Title:       title,
-				Description: "Playlist created by youtube data api v3",
-			},
-			Status: &youtube.PlaylistStatus{
-				PrivacyStatus: "public",
-			},
-		}
-
 		for _, item := range response.Items {
 			songsMap[item.Id.VideoId] = item.Snippet.Title
 			// fmt.Println(item.Id.VideoId, item.Snippet.Title)
-			call2 := service2.Playlists.Insert([]string{"snippet", "status"}, playlist)
+			call2 := service2.Playlists.Insert([]string{"snippet,status"}, playlist)
 			_, err := call2.Do()
 			if err != nil {
 				fmt.Println(err)
 			}
-			// response, err := call.Do()
 		}
 	}
 
