@@ -117,7 +117,6 @@ func handleError(err error, message string) {
 }
 
 func main() {
-
 	err1 := godotenv.Load(".env")
 	if err1 != nil {
 		fmt.Println(err1)
@@ -143,11 +142,13 @@ func main() {
 	r := regexp.MustCompile(`playlist\/(.*)\?`)
 
 	inp := ""
-	fmt.Printf("Enter the playlist id: ")
+	fmt.Printf("Enter the playlist link: ")
 	fmt.Scan(&inp)
 	playlistId := fmt.Sprintln(r.FindString(inp))
 	playlistId = playlistId[9 : len(playlistId)-2]
-	fmt.Println(playlistId)
+	fmt.Print("The Playlist ID is : ")
+	fmt.Print(playlistId)
+	fmt.Print("\n")
 	// playlistId2 := "1ckDytqUi4BUYzs6HIhcAN"
 
 	tracks, err := client.GetPlaylistItems(ctx, spotify.ID(playlistId))
@@ -159,6 +160,7 @@ func main() {
 
 	songs := []string{}
 
+	fmt.Println("All the Songs in the Playlist are")
 	for page := 1; ; page++ {
 		for _, v := range tracks.Items {
 			inp2 := fmt.Sprintln(v.Track)
@@ -167,9 +169,9 @@ func main() {
 			songs = append(songs, fmt.Sprintf("%s by %s in %s", r2.FindString(inp2), inp3, inp4))
 		}
 
-		// for i, v := range songs {
-		// 	fmt.Printf("%d. %s\n", i+1, v)
-		// }
+		for i, v := range songs {
+			fmt.Printf("%d. %s\n", i+1, v)
+		}
 
 		err = client.NextPage(ctx, tracks)
 		if err == spotify.ErrNoMorePages {
@@ -179,6 +181,8 @@ func main() {
 			fmt.Println(err)
 		}
 	}
+	fmt.Println()
+	fmt.Println()
 
 	ytDevKey := os.Getenv("YOUTUBE_API_KEY")
 	ytClient := &http.Client{
@@ -228,5 +232,4 @@ func main() {
 			}
 		}
 	}
-
 }
